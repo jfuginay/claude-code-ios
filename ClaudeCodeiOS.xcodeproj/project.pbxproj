@@ -15,6 +15,12 @@
 		1A000022315A4B8800000001 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000023315A4B8800000001 /* ProjectsView.swift */; };
 		1A000024315A4B8800000001 /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000025315A4B8800000001 /* ProjectDetailView.swift */; };
 		1A000028315A4B8800000001 /* APIKeySetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000029315A4B8800000001 /* APIKeySetupView.swift */; };
+		A05D88322E2592CB003BEEF6 /* ClaudeFlowSwarmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05D88302E2592CB003BEEF6 /* ClaudeFlowSwarmView.swift */; };
+		A05D88332E2592CB003BEEF6 /* FlowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05D88312E2592CB003BEEF6 /* FlowDetailView.swift */; };
+		A05D883F2E25B108003BEEF6 /* ClaudeFlowEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05D883C2E25B108003BEEF6 /* ClaudeFlowEngine.swift */; };
+		A05D88402E25B108003BEEF6 /* SharedContextDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05D883E2E25B108003BEEF6 /* SharedContextDatabase.swift */; };
+		A05D88412E25B108003BEEF6 /* ClaudeSwarmOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05D883D2E25B108003BEEF6 /* ClaudeSwarmOrchestrator.swift */; };
+		A05D88432E25B14C003BEEF6 /* ClaudeStatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05D88422E25B14C003BEEF6 /* ClaudeStatusBarView.swift */; };
 		A0CE36542E230C4F005D08DE /* GitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE36522E230C4F005D08DE /* GitManager.swift */; };
 		A0CE36552E230C4F005D08DE /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE364F2E230C4F005D08DE /* CacheManager.swift */; };
 		A0CE36562E230C4F005D08DE /* FileSystemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE36512E230C4F005D08DE /* FileSystemManager.swift */; };
@@ -23,7 +29,6 @@
 		A0CE365A2E230C8A005D08DE /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE36592E230C8A005D08DE /* Repository.swift */; };
 		A0D5D4F52E24A78200E02039 /* TaskMasterEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D5D4F42E24A78200E02039 /* TaskMasterEngine.swift */; };
 		A0D5D4F72E24A7A700E02039 /* TaskMasterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D5D4F62E24A7A700E02039 /* TaskMasterView.swift */; };
-		A0D5D4F92E24AD0400E02039 /* ClaudeStatusBarView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D5D4F82E24AD0400E02039 /* ClaudeStatusBarView 2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +41,12 @@
 		1A000023315A4B8800000001 /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
 		1A000025315A4B8800000001 /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		1A000029315A4B8800000001 /* APIKeySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeySetupView.swift; sourceTree = "<group>"; };
+		A05D88302E2592CB003BEEF6 /* ClaudeFlowSwarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeFlowSwarmView.swift; sourceTree = "<group>"; };
+		A05D88312E2592CB003BEEF6 /* FlowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowDetailView.swift; sourceTree = "<group>"; };
+		A05D883C2E25B108003BEEF6 /* ClaudeFlowEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeFlowEngine.swift; sourceTree = "<group>"; };
+		A05D883D2E25B108003BEEF6 /* ClaudeSwarmOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeSwarmOrchestrator.swift; sourceTree = "<group>"; };
+		A05D883E2E25B108003BEEF6 /* SharedContextDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedContextDatabase.swift; sourceTree = "<group>"; };
+		A05D88422E25B14C003BEEF6 /* ClaudeStatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeStatusBarView.swift; sourceTree = "<group>"; };
 		A0CE364F2E230C4F005D08DE /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		A0CE36502E230C4F005D08DE /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
 		A0CE36512E230C4F005D08DE /* FileSystemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemManager.swift; sourceTree = "<group>"; };
@@ -44,7 +55,6 @@
 		A0CE36592E230C8A005D08DE /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		A0D5D4F42E24A78200E02039 /* TaskMasterEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskMasterEngine.swift; sourceTree = "<group>"; };
 		A0D5D4F62E24A7A700E02039 /* TaskMasterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskMasterView.swift; sourceTree = "<group>"; };
-		A0D5D4F82E24AD0400E02039 /* ClaudeStatusBarView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClaudeStatusBarView 2.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +80,6 @@
 			isa = PBXGroup;
 			children = (
 				1A000002315A4B8800000001 /* ClaudeCodeiOSApp.swift */,
-				1A000004315A4B8800000001 /* ContentView.swift */,
 				A0CE36BB2E230CAA005D08DE /* Models */,
 				A0CE36BC2E230CAB005D08DE /* Services */,
 				1A000026315A4B8800000001 /* Views */,
@@ -99,12 +108,15 @@
 		1A000026315A4B8800000001 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A05D88422E25B14C003BEEF6 /* ClaudeStatusBarView.swift */,
+				A05D88302E2592CB003BEEF6 /* ClaudeFlowSwarmView.swift */,
+				A05D88312E2592CB003BEEF6 /* FlowDetailView.swift */,
 				A0D5D4F62E24A7A700E02039 /* TaskMasterView.swift */,
 				1A000021315A4B8800000001 /* ChatView.swift */,
 				1A000023315A4B8800000001 /* ProjectsView.swift */,
 				1A000025315A4B8800000001 /* ProjectDetailView.swift */,
 				1A000029315A4B8800000001 /* APIKeySetupView.swift */,
-				A0D5D4F82E24AD0400E02039 /* ClaudeStatusBarView 2.swift */,
+				1A000004315A4B8800000001 /* ContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -120,6 +132,9 @@
 		A0CE36BC2E230CAB005D08DE /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				A05D883C2E25B108003BEEF6 /* ClaudeFlowEngine.swift */,
+				A05D883D2E25B108003BEEF6 /* ClaudeSwarmOrchestrator.swift */,
+				A05D883E2E25B108003BEEF6 /* SharedContextDatabase.swift */,
 				A0D5D4F42E24A78200E02039 /* TaskMasterEngine.swift */,
 				A0CE364F2E230C4F005D08DE /* CacheManager.swift */,
 				A0CE36502E230C4F005D08DE /* ClaudeService.swift */,
@@ -202,18 +217,23 @@
 			files = (
 				1A000003315A4B8800000001 /* ContentView.swift in Sources */,
 				1A000001315A4B8800000001 /* ClaudeCodeiOSApp.swift in Sources */,
+				A05D88432E25B14C003BEEF6 /* ClaudeStatusBarView.swift in Sources */,
 				1A000020315A4B8800000001 /* ChatView.swift in Sources */,
 				A0CE36542E230C4F005D08DE /* GitManager.swift in Sources */,
+				A05D88322E2592CB003BEEF6 /* ClaudeFlowSwarmView.swift in Sources */,
+				A05D88332E2592CB003BEEF6 /* FlowDetailView.swift in Sources */,
 				A0CE36552E230C4F005D08DE /* CacheManager.swift in Sources */,
 				A0D5D4F52E24A78200E02039 /* TaskMasterEngine.swift in Sources */,
 				A0CE365A2E230C8A005D08DE /* Repository.swift in Sources */,
-				A0D5D4F92E24AD0400E02039 /* ClaudeStatusBarView 2.swift in Sources */,
 				A0D5D4F72E24A7A700E02039 /* TaskMasterView.swift in Sources */,
 				A0CE36562E230C4F005D08DE /* FileSystemManager.swift in Sources */,
 				A0CE36572E230C4F005D08DE /* ClaudeService.swift in Sources */,
 				A0CE36582E230C4F005D08DE /* TokenizationEngine.swift in Sources */,
 				1A000022315A4B8800000001 /* ProjectsView.swift in Sources */,
 				1A000024315A4B8800000001 /* ProjectDetailView.swift in Sources */,
+				A05D883F2E25B108003BEEF6 /* ClaudeFlowEngine.swift in Sources */,
+				A05D88402E25B108003BEEF6 /* SharedContextDatabase.swift in Sources */,
+				A05D88412E25B108003BEEF6 /* ClaudeSwarmOrchestrator.swift in Sources */,
 				1A000028315A4B8800000001 /* APIKeySetupView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

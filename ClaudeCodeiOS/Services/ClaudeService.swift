@@ -81,10 +81,13 @@ class ClaudeService: ObservableObject {
             )
         }
         
+        // Process command syntax and file references
+        let processedMessage = processCommand(message)
+        
         let userMessage = ClaudeMessage(
             id: UUID(),
             role: .user,
-            content: message,
+            content: processedMessage,
             timestamp: Date(),
             repository: repository,
             context: context
@@ -145,7 +148,7 @@ class ClaudeService: ObservableObject {
                     }
                     
                     let stream = try await streamClaudeAPI(
-                        message: message,
+                        message: processCommand(message),
                         context: context,
                         conversationHistory: Array(conversationHistory.suffix(10))
                     )
@@ -376,6 +379,16 @@ class ClaudeService: ObservableObject {
         let decoder = JSONDecoder()
         let apiResponse = try decoder.decode(ClaudeAPIResponse.self, from: data)
         
+        // Update token usage from API response
+        if let usage = apiResponse.usage {
+            await MainActor.run {
+                self.currentTokenUsage = TokenUsage(
+                    inputTokens: usage.input_tokens,
+                    outputTokens: usage.output_tokens
+                )
+            }
+        }
+        
         return apiResponse.content.first?.text ?? "No response content"
     }
     
@@ -492,20 +505,30 @@ class ClaudeService: ObservableObject {
     
     private func buildSystemPrompt(context: ProjectContext?) -> String {
         var prompt = """
-        You are Claude Code for iOS, an AI assistant that helps users work with their code repositories. You have access to the user's project files and Git history.
+        You are Claude Code, an AI coding assistant that works directly in the terminal. You help developers by understanding their entire codebase and executing routine tasks through natural language commands.
         
         Key capabilities:
         - Analyze and understand code in multiple programming languages
-        - Help with debugging, refactoring, and code improvements
-        - Generate commit messages based on changes
-        - Provide architectural guidance and best practices
-        - Assist with Git workflows and version control
+        - Execute git workflows and handle version control
+        - Debug issues and provide solutions
+        - Refactor and improve code quality
+        - Generate commit messages and handle file operations
+        - Support @file references and command-line syntax
+        - Handle slash commands like /bug for issue reporting
+        
+        Command patterns you understand:
+        - "claude -p" for print/analysis mode
+        - "claude -c" for continuing conversations
+        - "@filename" for file references
+        - "think" for extended reasoning
+        - "/bug" for issue reporting
         
         Guidelines:
-        - Always provide clear, actionable advice
-        - Consider the full project context when making suggestions
-        - Be concise but thorough in explanations
-        - Suggest best practices and modern development approaches
+        - Be direct and actionable like a CLI tool
+        - Focus on code-related tasks and workflows
+        - Provide concrete solutions, not just explanations
+        - Support developer workflows and productivity
+        - Handle streaming responses appropriately
         """
         
         if let context = context {
@@ -581,6 +604,46 @@ class ClaudeService: ObservableObject {
         
         Provide only the commit message, without any additional explanation.
         """
+    }
+    
+    // MARK: - Command Processing
+    
+    private func processCommand(_ message: String) -> String {
+        var processedMessage = message
+        
+        // Handle @file references
+        let filePattern = #"@([a-zA-Z0-9_.-]+(?:\.[a-zA-Z0-9]+)?)"#
+        let fileRegex = try? NSRegularExpression(pattern: filePattern, options: [])
+        
+        if let regex = fileRegex {
+            let matches = regex.matches(in: message, options: [], range: NSRange(location: 0, length: message.count))
+            for match in matches.reversed() {
+                if let range = Range(match.range, in: message) {
+                    let filename = String(message[range])
+                    // In a real implementation, you'd read the file contents
+                    processedMessage = processedMessage.replacingOccurrences(of: filename, with: "File reference: \(filename)")
+                }
+            }
+        }
+        
+        // Handle slash commands
+        if message.hasPrefix("/bug") {
+            processedMessage = "Bug report: " + String(message.dropFirst(4))
+        }
+        
+        // Handle claude commands
+        if message.hasPrefix("claude -p") {
+            processedMessage = "Print mode: " + String(message.dropFirst(8))
+        } else if message.hasPrefix("claude -c") {
+            processedMessage = "Continue conversation: " + String(message.dropFirst(8))
+        }
+        
+        // Handle think command
+        if message.hasPrefix("think") {
+            processedMessage = "Extended thinking mode: " + String(message.dropFirst(5))
+        }
+        
+        return processedMessage
     }
     
     // MARK: - Utility Methods

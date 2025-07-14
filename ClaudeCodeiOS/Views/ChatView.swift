@@ -1,5 +1,31 @@
 import SwiftUI
 
+// MARK: - Keyboard Avoidance Extension
+extension View {
+    func keyboardAvoiding() -> some View {
+        self.modifier(KeyboardAvoidingModifier())
+    }
+}
+
+struct KeyboardAvoidingModifier: ViewModifier {
+    @State private var keyboardHeight: CGFloat = 0
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, keyboardHeight)
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
+                if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+                    let keyboardRectangle = keyboardFrame.cgRectValue
+                    keyboardHeight = keyboardRectangle.height
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                keyboardHeight = 0
+            }
+            .animation(.easeInOut(duration: 0.3), value: keyboardHeight)
+    }
+}
+
 struct ChatView: View {
     @EnvironmentObject var claudeService: ClaudeService
     @EnvironmentObject var gitManager: GitManager
@@ -26,114 +52,149 @@ struct ChatView: View {
     // @State private var currentTokenUsage: TokenUsage?
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Claude CLI Status Bar (temporarily disabled - need to add to Xcode project)
-            
-            ClaudeStatusBarView(
-                isProcessing: isLoading,
-                processingStatus: claudeService.processingStatus,
-                tokenUsage: claudeService.currentTokenUsage
-            )
-            
-            
-            // Messages List
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 4) {
-                        ForEach(messages) { message in
-                            ChatMessageView(message: message)
-                                .id(message.id)
+        ZStack(alignment: .bottom) {
+            // Main terminal content area
+            VStack(spacing: 0) {
+                // Messages List
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 4) {
+                            ForEach(messages) { message in
+                                ChatMessageView(message: message)
+                                    .id(message.id)
+                            }
+                            
+                            // Spacer to push content up when status bar is shown
+                            if isLoading {
+                                Color.clear
+                                    .frame(height: 60)
+                                    .id("bottom-spacer")
+                            }
                         }
-                        
-                        // Remove inline loading indicator as we'll show it in the status bar
+                        .padding(.vertical, 12)
                     }
-                    .padding(.vertical, 12)
-                }
-                .onChange(of: messages.count) { _ in
-                    if let lastMessage = messages.last {
+                    .background(Color(.systemBackground))
+                    .onChange(of: messages.count) { _ in
                         withAnimation(.easeOut(duration: 0.3)) {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                        }
-                    }
-                }
-            }
-            
-            Divider()
-            
-            // Input Section
-            VStack(spacing: 12) {
-                // Quick Actions
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        QuickActionButton(title: "Explain Code", icon: "doc.text.magnifyingglass") {
-                            messageText = "Explain how this code works"
-                        }
-                        
-                        QuickActionButton(title: "Debug Issue", icon: "ladybug") {
-                            messageText = "Help me debug this issue"
-                        }
-                        
-                        QuickActionButton(title: "Refactor", icon: "arrow.triangle.2.circlepath") {
-                            messageText = "How can I refactor this code?"
-                        }
-                        
-                        QuickActionButton(title: "Add Tests", icon: "checkmark.circle") {
-                            messageText = "Add unit tests for this code"
-                        }
-                        
-                        QuickActionButton(title: "Optimize", icon: "speedometer") {
-                            messageText = "How can I optimize this code for performance?"
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                
-                // Message Input
-                HStack(spacing: 12) {
-                    HStack(spacing: 8) {
-                        TextField("Ask Claude about your code...", text: $messageText, axis: .vertical)
-                            .focused($isTextFieldFocused)
-                            .lineLimit(1...4)
-                            .textFieldStyle(.plain)
-                        
-                        if !messageText.isEmpty {
-                            Button(action: {
-                                messageText = ""
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.secondary)
+                            if isLoading {
+                                proxy.scrollTo("bottom-spacer", anchor: .bottom)
+                            } else if let lastMessage = messages.last {
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
                             }
                         }
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(20)
-                    
-                    Button(action: sendMessage) {
-                        Image(systemName: messageText.isEmpty ? "mic" : "arrow.up.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(messageText.isEmpty ? .secondary : .blue)
-                    }
-                    .disabled(isLoading)
                 }
-                .padding(.horizontal)
+                
+                Divider()
+                
+                // Input Section (only shown when not processing)
+                if !isLoading {
+                    VStack(spacing: 12) {
+                        // Quick Actions
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                QuickActionButton(title: "Explain Code", icon: "doc.text.magnifyingglass") {
+                                    messageText = "Explain how this code works"
+                                }
+                                
+                                QuickActionButton(title: "Debug Issue", icon: "ladybug") {
+                                    messageText = "Help me debug this issue"
+                                }
+                                
+                                QuickActionButton(title: "Refactor", icon: "arrow.triangle.2.circlepath") {
+                                    messageText = "How can I refactor this code?"
+                                }
+                                
+                                QuickActionButton(title: "Add Tests", icon: "checkmark.circle") {
+                                    messageText = "Add unit tests for this code"
+                                }
+                                
+                                QuickActionButton(title: "Optimize", icon: "speedometer") {
+                                    messageText = "How can I optimize this code for performance?"
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        // Message Input
+                        VStack(spacing: 8) {
+                            // Full-width input field
+                            HStack(spacing: 8) {
+                                TextField("Type your message or use @file.swift to reference files...", text: $messageText, axis: .vertical)
+                                    .focused($isTextFieldFocused)
+                                    .lineLimit(1...4)
+                                    .textFieldStyle(.roundedBorder)
+                                    .font(.system(.body, design: .monospaced))
+                                
+                                if !messageText.isEmpty {
+                                    Button(action: {
+                                        messageText = ""
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                
+                                Button(action: sendMessage) {
+                                    Image(systemName: "arrow.up.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(messageText.isEmpty ? .secondary : .blue)
+                                }
+                                .disabled(messageText.isEmpty)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color(.systemBackground))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(Color(.systemGray4), lineWidth: 1)
+                            )
+                            
+                            // Quick command buttons
+                            HStack(spacing: 8) {
+                                CommandButton(title: "claude -c", subtitle: "Continue") {
+                                    messageText = "Continue our previous conversation"
+                                }
+                                
+                                CommandButton(title: "claude -p", subtitle: "Print mode") {
+                                    messageText = "Analyze this codebase and print summary"
+                                }
+                                
+                                CommandButton(title: "/bug", subtitle: "Report issue") {
+                                    messageText = "/bug "
+                                }
+                                
+                                CommandButton(title: "think", subtitle: "Extended thinking") {
+                                    messageText = "think about this problem step by step"
+                                }
+                            }
+                            .padding(.horizontal, 12)
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.vertical, 8)
+                    .background(Color(.systemBackground))
+                }
             }
-            .padding(.vertical, 8)
-            .background(Color(.systemBackground))
             
-            // TODO: Processing status bar - Add after adding ProcessingStatusView to Xcode project
-            /*
-            ProcessingStatusView(
-                isProcessing: isLoading,
-                statusMessage: processingStatus,
-                tokenUsage: currentTokenUsage
-            )
-            */
+            // Status bar at bottom (overlays when processing)
+            if isLoading {
+                ClaudeStatusBarView(
+                    isProcessing: isLoading,
+                    processingStatus: claudeService.processingStatus,
+                    tokenUsage: claudeService.currentTokenUsage
+                )
+                .transition(.move(edge: .bottom))
+            }
         }
         .navigationTitle("claude-code@terminal")
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemBackground))
+        .keyboardAvoiding()
+        .onTapGesture {
+            // Dismiss keyboard when tapping outside
+            isTextFieldFocused = false
+        }
         .onAppear {
             checkAPIKeyStatus()
             if messages.isEmpty {
@@ -160,17 +221,27 @@ struct ChatView: View {
         
         isLoading = true
         streamingResponse = ""
-        // TODO: Processing status tracking - Add after adding TokenUsage to Xcode project
-        // processingStatus = "Initializing Claude..."
-        // currentTokenUsage = nil
         
         // ClaudeService will handle adding messages to conversation history
-        
         _Concurrency.Task {
             do {
                 // Get current repository context if available
                 let currentRepo = gitManager.currentRepository
                 let activeFiles = Set<WorkspaceFile>()
+                
+                // Add user message to conversation history immediately
+                let userMessage = ClaudeMessage(
+                    id: UUID(),
+                    role: .user,
+                    content: messageToSend,
+                    timestamp: Date(),
+                    repository: currentRepo,
+                    context: nil
+                )
+                
+                await MainActor.run {
+                    claudeService.conversationHistory.append(userMessage)
+                }
                 
                 // Use streaming for better UX
                 let stream = claudeService.streamMessage(
@@ -179,24 +250,34 @@ struct ChatView: View {
                     activeFiles: activeFiles
                 )
                 
+                var fullResponse = ""
+                
                 // Process streaming response (ClaudeService handles conversation updates)
                 for await chunk in stream {
                     await MainActor.run {
                         streamingResponse += chunk
-                        // The ClaudeService will update conversation history automatically
+                        fullResponse += chunk
                     }
                 }
                 
                 await MainActor.run {
+                    // Add assistant response to conversation history
+                    let assistantMessage = ClaudeMessage(
+                        id: UUID(),
+                        role: .assistant,
+                        content: fullResponse,
+                        timestamp: Date(),
+                        repository: currentRepo,
+                        context: nil
+                    )
+                    
+                    claudeService.conversationHistory.append(assistantMessage)
                     isLoading = false
-                    // TODO: Processing status tracking - Add after adding TokenUsage to Xcode project
-                    // processingStatus = claudeService.processingStatus
-                    // currentTokenUsage = claudeService.currentTokenUsage
                     
                     // TODO: Extract tasks from the completed response - Add after adding TaskManager to Xcode project
                     /*
-                    if !streamingResponse.isEmpty {
-                        let extractedTasks = taskManager.extractTasksFromMessage(streamingResponse, messageId: messages.last?.id)
+                    if !fullResponse.isEmpty {
+                        let extractedTasks = taskManager.extractTasksFromMessage(fullResponse, messageId: messages.last?.id)
                         if !extractedTasks.isEmpty {
                             taskManager.addTasks(extractedTasks)
                         }
@@ -285,6 +366,44 @@ struct QuickActionButton: View {
             .cornerRadius(16)
         }
         .foregroundColor(.primary)
+    }
+}
+
+struct CommandButton: View {
+    let title: String
+    let subtitle: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 2) {
+                Text(title)
+                    .font(.system(.caption, design: .monospaced))
+                    .fontWeight(.medium)
+                    .foregroundColor(.blue)
+                
+                Text(subtitle)
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color(.systemGray6))
+            .cornerRadius(6)
+        }
+    }
+}
+
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
     }
 }
 

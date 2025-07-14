@@ -34,11 +34,11 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Main Claude CLI Tab (Primary Interface)
-            // TODO: Re-enable MainCLIView after fixing string interpolation issues
-            HomeView(selectedTab: $selectedTab, showingAPISetup: $showingAPISetup)
+            // Claude Code Terminal - exact replica of Claude Code for macOS
+            ChatView()
                 .environmentObject(claudeService)
-                // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
+                .environmentObject(gitManager)
+                .environmentObject(fileSystemManager)
                 .tabItem {
                     Image(systemName: "terminal.fill")
                     Text("claude")
@@ -56,27 +56,38 @@ struct ContentView: View {
                 }
                 .tag(1)
             
-            // Legacy Chat Tab (for backward compatibility)
-            ChatView()
+            // Claude Desktop Chat - for ideation and PRD creation
+            NavigationView {
+                ChatView()
+                    .navigationTitle("Claude Chat")
+                    .navigationBarTitleDisplayMode(.large)
+            }
+            .environmentObject(claudeService)
+            .environmentObject(gitManager)
+            .environmentObject(fileSystemManager)
+            .tabItem {
+                Image(systemName: "bubble.left.and.text.bubble.right")
+                Text("chat")
+            }
+            .tag(2)
+            
+            // Claude Flow & Swarm - Multi-agent task orchestration
+            ClaudeFlowSwarmView(claudeService: claudeService)
                 .environmentObject(claudeService)
-                .environmentObject(gitManager)
-                .environmentObject(fileSystemManager)
-                // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
-                    Image(systemName: "bubble.left.and.text.bubble.right")
-                    Text("chat")
+                    Image(systemName: "brain.head.profile")
+                    Text("flow")
                 }
-                .tag(2)
+                .tag(3)
             
             // TaskMaster Tab (temporarily disabled - need to add to Xcode project)
-            
             TaskMasterView()
                 .environmentObject(claudeService)
                 .tabItem {
                     Image(systemName: "checklist")
                     Text("tasks")
                 }
-                .tag(3)
+                .tag(4)
             
             
             // Settings Tab
@@ -86,7 +97,7 @@ struct ContentView: View {
                     Image(systemName: "gearshape")
                     Text("config")
                 }
-                .tag(4)
+                .tag(5)
         }
         .accentColor(.blue)
         .sheet(isPresented: $showingAPISetup) {

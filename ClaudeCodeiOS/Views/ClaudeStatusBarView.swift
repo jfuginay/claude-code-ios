@@ -7,96 +7,80 @@ struct ClaudeStatusBarView: View {
     
     @State private var timeElapsed: Int = 0
     @State private var timer: Timer?
-    @State private var funnyMessageIndex: Int = 0
-    
-    private let funnyMessages = [
-        "Scheming...",
-        "Reading your mind...",
-        "Brewing some code magic...", 
-        "Contemplating the universe of your codebase...",
-        "Channeling the spirits of clean code...",
-        "Summoning the TypeScript gods...",
-        "Parsing the secrets of your project...",
-        "Consulting the documentation oracle...",
-        "Weaving threads of logic...",
-        "Debugging the matrix..."
-    ]
     
     var body: some View {
-        HStack {
-            // Terminal-style traffic lights
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(.red)
-                    .frame(width: 12, height: 12)
-                Circle()
-                    .fill(.yellow)
-                    .frame(width: 12, height: 12)
-                Circle()
-                    .fill(.green)
-                    .frame(width: 12, height: 12)
-            }
-            .padding(.leading, 8)
-            
-            Spacer()
-            
-            // Status text with Claude CLI styling
-            HStack(spacing: 8) {
-                if isProcessing {
-                    Text("*")
-                        .foregroundColor(.orange)
-                        .font(.system(.body, design: .monospaced, weight: .bold))
-                    
-                    Text(currentFunnyMessage)
-                        .foregroundColor(.white)
+        HStack(spacing: 8) {
+            // Status text with authentic Claude CLI styling
+            if isProcessing {
+                // Processing state - matches Claude CLI behavior
+                Text("*")
+                    .foregroundColor(.orange)
+                    .font(.system(.body, design: .monospaced, weight: .bold))
+                
+                Text(processingStatus.isEmpty ? "Processing..." : processingStatus)
+                    .foregroundColor(.primary)
+                    .font(.system(.body, design: .monospaced))
+                
+                Text("(\(timeElapsed)s)")
+                    .foregroundColor(.secondary)
+                    .font(.system(.body, design: .monospaced))
+                
+                if let usage = tokenUsage {
+                    Text("•")
+                        .foregroundColor(.secondary)
                         .font(.system(.body, design: .monospaced))
                     
-                    Text("(\(timeElapsed)s")
-                        .foregroundColor(.gray)
+                    Text("\(formatTokens(usage.inputTokens)) → \(formatTokens(usage.outputTokens))")
+                        .foregroundColor(.secondary)
                         .font(.system(.body, design: .monospaced))
-                    
-                    if let usage = tokenUsage {
-                        Text("• \(formatTokens(usage.totalTokens)) tokens")
-                            .foregroundColor(.gray)
-                            .font(.system(.body, design: .monospaced))
-                    }
-                    
-                    Text("• esc to interrupt)")
-                        .foregroundColor(.gray)
+                }
+                
+                Text("• esc to interrupt)")
+                    .foregroundColor(.secondary)
+                    .font(.system(.body, design: .monospaced))
+            } else {
+                // Ready state
+                Text("claude@code:~$")
+                    .foregroundColor(.green)
+                    .font(.system(.body, design: .monospaced, weight: .bold))
+                
+                Text("Ready")
+                    .foregroundColor(.secondary)
+                    .font(.system(.body, design: .monospaced))
+                
+                if let usage = tokenUsage {
+                    Text("• \(formatTokens(usage.totalTokens)) tokens")
+                        .foregroundColor(.secondary)
                         .font(.system(.body, design: .monospaced))
-                } else {
-                    Text("claude@code:~$")
-                        .foregroundColor(.green)
-                        .font(.system(.body, design: .monospaced, weight: .bold))
-                    
-                    Text("Ready")
-                        .foregroundColor(.gray)
-                        .font(.system(.body, design: .monospaced))
-                    
-                    if let usage = tokenUsage {
-                        Text("• \(formatTokens(usage.totalTokens)) tokens")
-                            .foregroundColor(.gray)
-                            .font(.system(.body, design: .monospaced))
-                    }
                 }
             }
             
             Spacer()
         }
-        .padding(.vertical, 8)
-        .background(Color.black)
-        .onChange(of: isProcessing) { processing in
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color(.systemBackground))
+        .overlay(
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(height: 1),
+            alignment: .top
+        )
+        .onAppear {
+            if isProcessing {
+                startTimer()
+            }
+        }
+        .onChange(of: isProcessing, perform: { processing in
             if processing {
                 startTimer()
-                startFunnyMessageRotation()
             } else {
                 stopTimer()
             }
+        })
+        .onDisappear {
+            stopTimer()
         }
-    }
-    
-    private var currentFunnyMessage: String {
-        funnyMessages[funnyMessageIndex % funnyMessages.count]
     }
     
     private func formatTokens(_ count: Int) -> String {
@@ -108,9 +92,18 @@ struct ClaudeStatusBarView: View {
     }
     
     private func startTimer() {
+        stopTimer() // Stop any existing timer
         timeElapsed = 0
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            timeElapsed += 1
+            DispatchQueue.main.async {
+                self.timeElapsed += 1
+            }
+        }
+        
+        // Ensure timer runs on main run loop
+        if let timer = timer {
+            RunLoop.main.add(timer, forMode: .common)
         }
     }
     
@@ -118,20 +111,6 @@ struct ClaudeStatusBarView: View {
         timer?.invalidate()
         timer = nil
         timeElapsed = 0
-    }
-    
-    private func startFunnyMessageRotation() {
-        funnyMessageIndex = Int.random(in: 0..<funnyMessages.count)
-        
-        // Rotate funny messages every 3 seconds while processing
-        _Concurrency.Task {
-            while isProcessing {
-                try? await _Concurrency.Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
-                if isProcessing {
-                    funnyMessageIndex = (funnyMessageIndex + 1) % funnyMessages.count
-                }
-            }
-        }
     }
 }
 
