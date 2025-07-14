@@ -7,7 +7,14 @@ struct ChatView: View {
     // @EnvironmentObject var taskManager: TaskManager // TODO: Add after adding TaskManager to Xcode project
     
     @State private var messageText = ""
-    @State private var messages: [ChatMessage] = []
+    private var messages: [ChatMessage] {
+        claudeService.conversationHistory.map { claudeMessage in
+            ChatMessage(
+                content: claudeMessage.content,
+                type: claudeMessage.role == .user ? .user : .assistant
+            )
+        }
+    }
     @State private var isLoading = false
     @State private var streamingResponse = ""
     @State private var showingError = false
@@ -20,6 +27,15 @@ struct ChatView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // Claude CLI Status Bar (temporarily disabled - need to add to Xcode project)
+            
+            ClaudeStatusBarView(
+                isProcessing: isLoading,
+                processingStatus: claudeService.processingStatus,
+                tokenUsage: claudeService.currentTokenUsage
+            )
+            
+            
             // Messages List
             ScrollViewReader { proxy in
                 ScrollView {
@@ -130,19 +146,15 @@ struct ChatView: View {
         guard !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
         let messageToSend = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let userMessage = ChatMessage(content: messageToSend, type: .user)
-        messages.append(userMessage)
+        // Don't manipulate local messages - ClaudeService will handle conversation history
         
         messageText = ""
         isTextFieldFocused = false
         
         // Check if we have an API key
         guard hasAPIKey else {
-            let errorResponse = ChatMessage(
-                content: "⚠️ No API key configured. Please go to Settings to set up your Anthropic API key.",
-                type: .assistant
-            )
-            messages.append(errorResponse)
+            errorMessage = "⚠️ No API key configured. Please go to Settings to set up your Anthropic API key."
+            showingError = true
             return
         }
         
@@ -152,12 +164,9 @@ struct ChatView: View {
         // processingStatus = "Initializing Claude..."
         // currentTokenUsage = nil
         
-        // Add placeholder message for streaming response
-        let streamingMessage = ChatMessage(content: "", type: .assistant)
-        messages.append(streamingMessage)
-        let streamingIndex = messages.count - 1
+        // ClaudeService will handle adding messages to conversation history
         
-        Task {
+        _Concurrency.Task {
             do {
                 // Get current repository context if available
                 let currentRepo = gitManager.currentRepository
@@ -170,18 +179,11 @@ struct ChatView: View {
                     activeFiles: activeFiles
                 )
                 
+                // Process streaming response (ClaudeService handles conversation updates)
                 for await chunk in stream {
                     await MainActor.run {
                         streamingResponse += chunk
-                        if streamingIndex < messages.count {
-                            messages[streamingIndex] = ChatMessage(
-                                content: streamingResponse,
-                                type: .assistant
-                            )
-                        }
-                        // TODO: Update status and token usage from service - Add after adding TokenUsage to Xcode project
-                        // processingStatus = claudeService.processingStatus
-                        // currentTokenUsage = claudeService.currentTokenUsage
+                        // The ClaudeService will update conversation history automatically
                     }
                 }
                 
@@ -205,13 +207,8 @@ struct ChatView: View {
             } catch {
                 await MainActor.run {
                     isLoading = false
-                    // Replace the streaming message with error
-                    if streamingIndex < messages.count {
-                        messages[streamingIndex] = ChatMessage(
-                            content: "❌ Error: \(error.localizedDescription)\n\nPlease check your API key in Settings.",
-                            type: .assistant
-                        )
-                    }
+                    errorMessage = error.localizedDescription
+                    showingError = true
                 }
             }
         }
@@ -253,16 +250,11 @@ struct ChatView: View {
             System status: OFFLINE
             """
         
-        let welcomeMessage = ChatMessage(
-            content: welcomeContent,
-            type: .assistant
-        )
-        messages.append(welcomeMessage)
+        // Welcome message functionality disabled - using ClaudeService conversation history
     }
     
     private func clearChat() {
-        messages.removeAll()
-        addWelcomeMessage()
+        claudeService.clearConversationHistory()
     }
     
     private func exportChat() {

@@ -25,7 +25,7 @@ class CacheManager: ObservableObject {
         self.contextsCacheURL = cacheURL.appendingPathComponent("contexts")
         
         createCacheDirectories()
-        Task {
+        _Concurrency.Task {
             await updateCacheStats()
         }
     }

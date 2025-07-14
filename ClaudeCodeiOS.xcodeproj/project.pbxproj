@@ -21,6 +21,9 @@
 		A0CE36572E230C4F005D08DE /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE36502E230C4F005D08DE /* ClaudeService.swift */; };
 		A0CE36582E230C4F005D08DE /* TokenizationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE36532E230C4F005D08DE /* TokenizationEngine.swift */; };
 		A0CE365A2E230C8A005D08DE /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CE36592E230C8A005D08DE /* Repository.swift */; };
+		A0D5D4F52E24A78200E02039 /* TaskMasterEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D5D4F42E24A78200E02039 /* TaskMasterEngine.swift */; };
+		A0D5D4F72E24A7A700E02039 /* TaskMasterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D5D4F62E24A7A700E02039 /* TaskMasterView.swift */; };
+		A0D5D4F92E24AD0400E02039 /* ClaudeStatusBarView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D5D4F82E24AD0400E02039 /* ClaudeStatusBarView 2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +42,9 @@
 		A0CE36522E230C4F005D08DE /* GitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitManager.swift; sourceTree = "<group>"; };
 		A0CE36532E230C4F005D08DE /* TokenizationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationEngine.swift; sourceTree = "<group>"; };
 		A0CE36592E230C8A005D08DE /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
+		A0D5D4F42E24A78200E02039 /* TaskMasterEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskMasterEngine.swift; sourceTree = "<group>"; };
+		A0D5D4F62E24A7A700E02039 /* TaskMasterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskMasterView.swift; sourceTree = "<group>"; };
+		A0D5D4F82E24AD0400E02039 /* ClaudeStatusBarView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClaudeStatusBarView 2.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +96,19 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		1A000026315A4B8800000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A0D5D4F62E24A7A700E02039 /* TaskMasterView.swift */,
+				1A000021315A4B8800000001 /* ChatView.swift */,
+				1A000023315A4B8800000001 /* ProjectsView.swift */,
+				1A000025315A4B8800000001 /* ProjectDetailView.swift */,
+				1A000029315A4B8800000001 /* APIKeySetupView.swift */,
+				A0D5D4F82E24AD0400E02039 /* ClaudeStatusBarView 2.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		A0CE36BB2E230CAA005D08DE /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -101,6 +120,7 @@
 		A0CE36BC2E230CAB005D08DE /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				A0D5D4F42E24A78200E02039 /* TaskMasterEngine.swift */,
 				A0CE364F2E230C4F005D08DE /* CacheManager.swift */,
 				A0CE36502E230C4F005D08DE /* ClaudeService.swift */,
 				A0CE36512E230C4F005D08DE /* FileSystemManager.swift */,
@@ -108,17 +128,6 @@
 				A0CE36532E230C4F005D08DE /* TokenizationEngine.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		1A000026315A4B8800000001 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				1A000021315A4B8800000001 /* ChatView.swift */,
-				1A000023315A4B8800000001 /* ProjectsView.swift */,
-				1A000025315A4B8800000001 /* ProjectDetailView.swift */,
-				1A000029315A4B8800000001 /* APIKeySetupView.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,7 +205,10 @@
 				1A000020315A4B8800000001 /* ChatView.swift in Sources */,
 				A0CE36542E230C4F005D08DE /* GitManager.swift in Sources */,
 				A0CE36552E230C4F005D08DE /* CacheManager.swift in Sources */,
+				A0D5D4F52E24A78200E02039 /* TaskMasterEngine.swift in Sources */,
 				A0CE365A2E230C8A005D08DE /* Repository.swift in Sources */,
+				A0D5D4F92E24AD0400E02039 /* ClaudeStatusBarView 2.swift in Sources */,
+				A0D5D4F72E24A7A700E02039 /* TaskMasterView.swift in Sources */,
 				A0CE36562E230C4F005D08DE /* FileSystemManager.swift in Sources */,
 				A0CE36572E230C4F005D08DE /* ClaudeService.swift in Sources */,
 				A0CE36582E230C4F005D08DE /* TokenizationEngine.swift in Sources */,
@@ -334,7 +346,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"ClaudeCodeiOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 4HSANV485G;
 				ENABLE_PREVIEWS = YES;
@@ -363,7 +375,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"ClaudeCodeiOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 4HSANV485G;
 				ENABLE_PREVIEWS = YES;

@@ -34,12 +34,13 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Home Tab
+            // Main Claude CLI Tab (Primary Interface)
+            // TODO: Re-enable MainCLIView after fixing string interpolation issues
             HomeView(selectedTab: $selectedTab, showingAPISetup: $showingAPISetup)
                 .environmentObject(claudeService)
                 // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
-                    Image(systemName: "terminal")
+                    Image(systemName: "terminal.fill")
                     Text("claude")
                 }
                 .tag(0)
@@ -55,28 +56,28 @@ struct ContentView: View {
                 }
                 .tag(1)
             
-            // Chat Tab
+            // Legacy Chat Tab (for backward compatibility)
             ChatView()
                 .environmentObject(claudeService)
                 .environmentObject(gitManager)
                 .environmentObject(fileSystemManager)
                 // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
-                    Image(systemName: "message")
+                    Image(systemName: "bubble.left.and.text.bubble.right")
                     Text("chat")
                 }
                 .tag(2)
             
-            // TODO: Tasks Tab - Add after adding TaskManager to Xcode project
-            /*
-            TaskManagementView()
-                .environmentObject(taskManager)
+            // TaskMaster Tab (temporarily disabled - need to add to Xcode project)
+            
+            TaskMasterView()
+                .environmentObject(claudeService)
                 .tabItem {
                     Image(systemName: "checklist")
-                    Text("Tasks")
+                    Text("tasks")
                 }
                 .tag(3)
-            */
+            
             
             // Settings Tab
             SettingsTabView(showingAPISetup: $showingAPISetup)
@@ -85,7 +86,7 @@ struct ContentView: View {
                     Image(systemName: "gearshape")
                     Text("config")
                 }
-                .tag(3)
+                .tag(4)
         }
         .accentColor(.blue)
         .sheet(isPresented: $showingAPISetup) {

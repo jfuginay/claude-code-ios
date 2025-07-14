@@ -18,6 +18,7 @@ class ClaudeService: ObservableObject {
     @Published var conversationHistory: [ClaudeMessage] = []
     @Published var processingStatus = "Ready"
     @Published var currentTokenUsage: TokenUsage?
+    @Published var lastResponse: String?
     
     private let apiKey: String?
     private let baseURL = "https://api.anthropic.com/v1"
@@ -46,6 +47,9 @@ class ClaudeService: ObservableObject {
         
         // Load API key from secure storage
         self.apiKey = UserDefaults.standard.string(forKey: "claude_api_key")
+        
+        // Load conversation history
+        self.loadConversationHistory()
         
         // Initialize MCP server
         self.mcpServer = GitMCPServer(
@@ -87,6 +91,7 @@ class ClaudeService: ObservableObject {
         )
         
         conversationHistory.append(userMessage)
+        saveConversationHistory()
         
         do {
             let response = try await callClaudeAPI(
@@ -105,6 +110,8 @@ class ClaudeService: ObservableObject {
             )
             
             conversationHistory.append(assistantMessage)
+            saveConversationHistory()
+            lastResponse = response  // Update for TaskMaster
             return assistantMessage
             
         } catch {
@@ -616,6 +623,26 @@ class ClaudeService: ObservableObject {
         // Extract just the commit message from the response
         let lines = response.components(separatedBy: .newlines)
         return lines.first { !$0.trimmingCharacters(in: .whitespaces).isEmpty } ?? "Update files"
+    }
+    
+    // MARK: - Conversation Persistence
+    
+    private func loadConversationHistory() {
+        guard let data = UserDefaults.standard.data(forKey: "claude_conversation_history"),
+              let messages = try? JSONDecoder().decode([ClaudeMessage].self, from: data) else {
+            return
+        }
+        conversationHistory = messages
+    }
+    
+    private func saveConversationHistory() {
+        guard let data = try? JSONEncoder().encode(conversationHistory) else { return }
+        UserDefaults.standard.set(data, forKey: "claude_conversation_history")
+    }
+    
+    func clearConversationHistory() {
+        conversationHistory.removeAll()
+        saveConversationHistory()
     }
     
     func setAPIKey(_ key: String) {
