@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var tokenizationEngine: TokenizationEngine
     @StateObject private var claudeService: ClaudeService
     // @StateObject private var taskManager = TaskManager() // TODO: Add after adding TaskManager to Xcode project
+    @StateObject private var gitHubService = GitHubService()
     
     init() {
         let cacheManager = CacheManager()
@@ -34,35 +35,35 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
-            HomeView(selectedTab: $selectedTab, showingAPISetup: $showingAPISetup)
+            MinimalistHomeView(selectedTab: $selectedTab)
                 .environmentObject(claudeService)
                 // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
-                    Image(systemName: "house")
-                    Text("Home")
+                    Image(systemName: "terminal")
+                    Text("claude")
                 }
                 .tag(0)
             
-            // Projects Tab
-            ProjectsView()
+            // Repositories Tab
+            GitHubRepositoryView()
+                .environmentObject(gitHubService)
                 .environmentObject(gitManager)
-                .environmentObject(fileSystemManager)
                 .environmentObject(claudeService)
                 .tabItem {
-                    Image(systemName: "folder")
-                    Text("Projects")
+                    Image(systemName: "folder.badge.gearshape")
+                    Text("repos")
                 }
                 .tag(1)
             
             // Chat Tab
-            ChatView()
+            CLIChatView()
                 .environmentObject(claudeService)
                 .environmentObject(gitManager)
                 .environmentObject(fileSystemManager)
                 // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
-                    Image(systemName: "bubble.left.and.text.bubble.right")
-                    Text("Chat")
+                    Image(systemName: "message")
+                    Text("chat")
                 }
                 .tag(2)
             
@@ -78,11 +79,11 @@ struct ContentView: View {
             */
             
             // Settings Tab
-            SettingsTabView(showingAPISetup: $showingAPISetup)
+            CLISettingsView()
                 .environmentObject(claudeService)
                 .tabItem {
-                    Image(systemName: "gear")
-                    Text("Settings")
+                    Image(systemName: "gearshape")
+                    Text("config")
                 }
                 .tag(3)
         }

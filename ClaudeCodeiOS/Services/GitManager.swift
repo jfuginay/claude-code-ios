@@ -50,6 +50,41 @@ class GitManager: ObservableObject {
         }
     }
     
+    func cloneRepository(from url: String, to localPath: URL, name: String) async throws {
+        isLoading = true
+        defer { isLoading = false }
+        
+        // Ensure parent directory exists
+        let parentDir = localPath.deletingLastPathComponent()
+        if !fileManager.fileExists(atPath: parentDir.path) {
+            try fileManager.createDirectory(at: parentDir, withIntermediateDirectories: true)
+        }
+        
+        // Ensure target directory doesn't exist
+        if fileManager.fileExists(atPath: localPath.path) {
+            throw GitError.repositoryAlreadyExists
+        }
+        
+        // Create directories
+        try fileManager.createDirectory(at: localPath, withIntermediateDirectories: true)
+        
+        // Clone the repository
+        try await executeGitCommand(["clone", url, localPath.path])
+        
+        // Create repository object and add to list
+        let repository = Repository(
+            id: UUID(),
+            name: name,
+            localPath: localPath,
+            remoteURL: url,
+            currentBranch: "main",
+            lastUpdated: Date()
+        )
+        
+        repositories.append(repository)
+        currentRepository = repository
+    }
+
     func cloneRepository(url: String, name: String? = nil) async throws -> Repository {
         isLoading = true
         defer { isLoading = false }
