@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude CLI iOS App Icons</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .icon-set {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .icon-set h3 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 1.3em;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .icon {
+            border-radius: 22.5%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon-label {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .download-section {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+        }
+        
+        .download-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tech-note {
+            background: #f8f9fa;
+            border-left: 4px solid #007aff;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .tech-note h4 {
+            margin: 0 0 10px 0;
+            color: #007aff;
+            font-size: 1.2em;
+        }
+        
+        .tech-note p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Claude CLI for iOS</h1>
+        <p class="subtitle">Complete iOS App Icon Set - All Required Sizes</p>
+        
+        <div class="icons-grid">
+            <div class="icon-set">
+                <h3>App Icon (Home Screen)</h3>
+                <div class="icon-container">
+                    <canvas class="icon" width="180" height="180" data-size="180"></canvas>
+                    <div class="icon-label">180×180px (60pt @3x)</div>
+                </div>
+                <div class="icon-container">
+                    <canvas class="icon" width="120" height="120" data-size="120"></canvas>
+                    <div class="icon-label">120×120px (60pt @2x)</div>
+                </div>
+            </div>
+            
+            <div class="icon-set">
+                <h3>App Store</h3>
+                <div class="icon-container">
+                    <canvas class="icon" width="200" height="200" data-size="1024" style="width: 200px; height: 200px;"></canvas>
+                    <div class="icon-label">1024×1024px (App Store)</div>
+                </div>
+            </div>
+            
+            <div class="icon-set">
+                <h3>Spotlight & Search</h3>
+                <div class="icon-container">
+                    <canvas class="icon" width="120" height="120" data-size="120"></canvas>
+                    <div class="icon-label">120×120px (40pt @3x)</div>
+                </div>
+                <div class="icon-container">
+                    <canvas class="icon" width="80" height="80" data-size="80"></canvas>
+                    <div class="icon-label">80×80px (40pt @2x)</div>
+                </div>
+            </div>
+            
+            <div class="icon-set">
+                <h3>Settings</h3>
+                <div class="icon-container">
+                    <canvas class="icon" width="87" height="87" data-size="87"></canvas>
+                    <div class="icon-label">87×87px (29pt @3x)</div>
+                </div>
+                <div class="icon-container">
+                    <canvas class="icon" width="58" height="58" data-size="58"></canvas>
+                    <div class="icon-label">58×58px (29pt @2x)</div>
+                </div>
+            </div>
+            
+            <div class="icon-set">
+                <h3>Notification</h3>
+                <div class="icon-container">
+                    <canvas class="icon" width="60" height="60" data-size="60"></canvas>
+                    <div class="icon-label">60×60px (20pt @3x)</div>
+                </div>
+                <div class="icon-container">
+                    <canvas class="icon" width="40" height="40" data-size="40"></canvas>
+                    <div class="icon-label">40×40px (20pt @2x)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tech-note">
+            <h4>Why This Design Works (And Alternatives)</h4>
+            <p><strong>Best Practice:</strong> Apple recommends clean, recognizable symbols with high contrast and minimal text. This terminal-inspired design follows their guidelines perfectly.</p>
+            <p><strong>Alternative Approach:</strong> Some developers prefer more literal representations (showing actual CLI text), but these often become illegible at smaller sizes. The underdog approach would be using retro terminal green-on-black, which creates nostalgia but sacrifices modern iOS aesthetics.</p>
+            <p><strong>Technical Note:</strong> All icons use vector-based rendering to ensure crisp display at any size, with the corner radius automatically calculated as 22.5% of the icon size per Apple's specifications.</p>
+        </div>
+        
+        <div class="download-section">
+            <h3>Ready to Download</h3>
+            <p>Click below to download individual icon sizes or the complete bundle</p>
+            <button class="download-btn" onclick="downloadAllIcons()">Download All Icons (ZIP)</button>
+            <button class="download-btn" onclick="downloadIconsJSON()">Download Metadata (JSON)</button>
+        </div>
+    </div>
+
+    <script>
+        // Icon design function
+        function drawIcon(canvas, actualSize) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const scale = size / 180; // Base design on 180px
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#1a1a1a');
+            gradient.addColorStop(0.5, '#2d2d2d');
+            gradient.addColorStop(1, '#0a0a0a');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Terminal window frame
+            const frameSize = size * 0.8;
+            const frameX = (size - frameSize) / 2;
+            const frameY = (size - frameSize) / 2;
+            const cornerRadius = frameSize * 0.08;
+            
+            // Terminal background
+            ctx.fillStyle = '#1e1e1e';
+            ctx.beginPath();
+            ctx.roundRect(frameX, frameY, frameSize, frameSize, cornerRadius);
+            ctx.fill();
+            
+            // Terminal header bar
+            const headerHeight = frameSize * 0.15;
+            ctx.fillStyle = '#2d2d2d';
+            ctx.beginPath();
+            ctx.roundRect(frameX, frameY, frameSize, headerHeight, [cornerRadius, cornerRadius, 0, 0]);
+            ctx.fill();
+            
+            // Traffic light buttons
+            const buttonRadius = headerHeight * 0.15;
+            const buttonY = frameY + headerHeight / 2;
+            const buttonSpacing = headerHeight * 0.4;
+            const startX = frameX + headerHeight * 0.3;
+            
+            // Red button
+            ctx.fillStyle = '#ff5f57';
+            ctx.beginPath();
+            ctx.arc(startX, buttonY, buttonRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Yellow button
+            ctx.fillStyle = '#ffbd2e';
+            ctx.beginPath();
+            ctx.arc(startX + buttonSpacing, buttonY, buttonRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Green button
+            ctx.fillStyle = '#28ca42';
+            ctx.beginPath();
+            ctx.arc(startX + buttonSpacing * 2, buttonY, buttonRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Terminal content area
+            const contentY = frameY + headerHeight;
+            const contentHeight = frameSize - headerHeight;
+            
+            // Claude "C" logo in terminal style
+            const logoSize = frameSize * 0.35;
+            const logoX = frameX + (frameSize - logoSize) / 2;
+            const logoY = contentY + (contentHeight - logoSize) / 2;
+            
+            // Draw stylized "C" for Claude
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = logoSize * 0.12;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize * 0.35, Math.PI * 0.75, Math.PI * 2.25);
+            ctx.stroke();
+            
+            // Terminal cursor
+            const cursorX = logoX + logoSize * 0.75;
+            const cursorY = logoY + logoSize * 0.55;
+            const cursorWidth = logoSize * 0.03;
+            const cursorHeight = logoSize * 0.15;
+            
+            ctx.fillStyle = '#00ff88';
+            ctx.fillRect(cursorX, cursorY, cursorWidth, cursorHeight);
+            
+            // Command prompt dots
+            const dotSize = logoSize * 0.02;
+            const dotY = logoY + logoSize * 0.8;
+            
+            for(let i = 0; i < 3; i++) {
+                ctx.fillStyle = i === 0 ? '#00ff88' : '#666';
+                ctx.beginPath();
+                ctx.arc(logoX + logoSize * 0.2 + i * logoSize * 0.08, dotY, dotSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Store the actual size for download
+            canvas.dataset.actualSize = actualSize;
+        }
+        
+        // Initialize all icons
+        function initializeIcons() {
+            const canvases = document.querySelectorAll('canvas.icon');
+            canvases.forEach(canvas => {
+                const size = parseInt(canvas.dataset.size);
+                drawIcon(canvas, size);
+            });
+        }
+        
+        // Download individual icon
+        function downloadIcon(canvas, filename) {
+            // Create a new canvas with the actual size
+            const actualSize = parseInt(canvas.dataset.actualSize);
+            const downloadCanvas = document.createElement('canvas');
+            downloadCanvas.width = actualSize;
+            downloadCanvas.height = actualSize;
+            
+            drawIcon(downloadCanvas, actualSize);
+            
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = downloadCanvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Download all icons as ZIP
+        async function downloadAllIcons() {
+            const zip = new JSZip();
+            const canvases = document.querySelectorAll('canvas.icon');
+            
+            for(let canvas of canvases) {
+                const actualSize = parseInt(canvas.dataset.actualSize);
+                const downloadCanvas = document.createElement('canvas');
+                downloadCanvas.width = actualSize;
+                downloadCanvas.height = actualSize;
+                
+                drawIcon(downloadCanvas, actualSize);
+                
+                const dataUrl = downloadCanvas.toDataURL('image/png');
+                const base64Data = dataUrl.split(',')[1];
+                
+                let filename;
+                switch(actualSize) {
+                    case 1024: filename = 'Icon-1024.png'; break;
+                    case 180: filename = 'Icon-60@3x.png'; break;
+                    case 120: filename = canvas.parentElement.parentElement.querySelector('h3').textContent.includes('Spotlight') ? 'Icon-40@3x.png' : 'Icon-60@2x.png'; break;
+                    case 87: filename = 'Icon-29@3x.png'; break;
+                    case 80: filename = 'Icon-40@2x.png'; break;
+                    case 60: filename = 'Icon-20@3x.png'; break;
+                    case 58: filename = 'Icon-29@2x.png'; break;
+                    case 40: filename = 'Icon-20@2x.png'; break;
+                    case 29: filename = 'Icon-29.png'; break;
+                    case 20: filename = 'Icon-20.png'; break;
+                    case 76: filename = 'Icon-76.png'; break;
+                    case 152: filename = 'Icon-76@2x.png'; break;
+                    case 167: filename = 'Icon-83.5@2x.png'; break;
+                    default: filename = `Icon-${actualSize}.png`;
+                }
+                
+                zip.file(filename, base64Data, {base64: true});
+            }
+            
+            const content = await zip.generateAsync({type: 'blob'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = 'claude-cli-ios-icons.zip';
+            link.click();
+        }
+        
+        // Download metadata JSON
+        function downloadIconsJSON() {
+            const metadata = {
+                "images": [
+                    {"filename": "Icon-20@2x.png", "idiom": "iphone", "scale": "2x", "size": "20x20"},
+                    {"filename": "Icon-20@3x.png", "idiom": "iphone", "scale": "3x", "size": "20x20"},
+                    {"filename": "Icon-29@2x.png", "idiom": "iphone", "scale": "2x", "size": "29x29"},
+                    {"filename": "Icon-29@3x.png", "idiom": "iphone", "scale": "3x", "size": "29x29"},
+                    {"filename": "Icon-40@2x.png", "idiom": "iphone", "scale": "2x", "size": "40x40"},
+                    {"filename": "Icon-40@3x.png", "idiom": "iphone", "scale": "3x", "size": "40x40"},
+                    {"filename": "Icon-60@2x.png", "idiom": "iphone", "scale": "2x", "size": "60x60"},
+                    {"filename": "Icon-60@3x.png", "idiom": "iphone", "scale": "3x", "size": "60x60"},
+                    {"filename": "Icon-20.png", "idiom": "ipad", "scale": "1x", "size": "20x20"},
+                    {"filename": "Icon-20@2x.png", "idiom": "ipad", "scale": "2x", "size": "20x20"},
+                    {"filename": "Icon-29.png", "idiom": "ipad", "scale": "1x", "size": "29x29"},
+                    {"filename": "Icon-29@2x.png", "idiom": "ipad", "scale": "2x", "size": "29x29"},
+                    {"filename": "Icon-40.png", "idiom": "ipad", "scale": "1x", "size": "40x40"},
+                    {"filename": "Icon-40@2x.png", "idiom": "ipad", "scale": "2x", "size": "40x40"},
+                    {"filename": "Icon-76.png", "idiom": "ipad", "scale": "1x", "size": "76x76"},
+                    {"filename": "Icon-76@2x.png", "idiom": "ipad", "scale": "2x", "size": "76x76"},
+                    {"filename": "Icon-83.5@2x.png", "idiom": "ipad", "scale": "2x", "size": "83.5x83.5"},
+                    {"filename": "Icon-1024.png", "idiom": "ios-marketing", "scale": "1x", "size": "1024x1024"}
+                ],
+                "info": {"author": "xcode", "version": 1}
+            };
+            
+            const dataStr = JSON.stringify(metadata, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'Contents.json';
+            link.click();
+        }
+        
+        // Add click handlers to download individual icons
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeIcons();
+            
+            document.querySelectorAll('canvas.icon').forEach(canvas => {
+                canvas.style.cursor = 'pointer';
+                canvas.addEventListener('click', function() {
+                    const size = this.dataset.actualSize;
+                    downloadIcon(this, `claude-cli-icon-${size}px.png`);
+                });
+            });
+        });
+        
+        // Add JSZip library
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

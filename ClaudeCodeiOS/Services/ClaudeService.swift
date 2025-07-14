@@ -1,6 +1,15 @@
 import Foundation
 import Combine
 
+struct TokenUsage {
+    let inputTokens: Int
+    let outputTokens: Int
+    
+    var totalTokens: Int {
+        inputTokens + outputTokens
+    }
+}
+
 @MainActor
 class ClaudeService: ObservableObject {
     @Published var isProcessing = false
@@ -115,7 +124,7 @@ class ClaudeService: ObservableObject {
                 do {
                     await MainActor.run {
                         self.processingStatus = "Building context..."
-                        self.currentTokenUsage = nil
+                        self.currentTokenUsage = nil as TokenUsage?
                     }
                     
                     let context = repository != nil ? await buildContext(

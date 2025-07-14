@@ -361,7 +361,7 @@ class TokenizationEngine: ObservableObject {
 // MARK: - Supporting Types
 
 struct TokenizedFile: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let fileId: UUID
     let content: String
     let tokens: [Token]
