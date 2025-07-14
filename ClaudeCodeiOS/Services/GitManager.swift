@@ -73,12 +73,10 @@ class GitManager: ObservableObject {
         
         // Create repository object and add to list
         let repository = Repository(
-            id: UUID(),
             name: name,
             localPath: localPath,
             remoteURL: url,
-            currentBranch: "main",
-            lastUpdated: Date()
+            currentBranch: "main"
         )
         
         repositories.append(repository)
