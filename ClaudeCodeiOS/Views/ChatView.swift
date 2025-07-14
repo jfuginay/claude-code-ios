@@ -4,6 +4,7 @@ struct ChatView: View {
     @EnvironmentObject var claudeService: ClaudeService
     @EnvironmentObject var gitManager: GitManager
     @EnvironmentObject var fileSystemManager: FileSystemManager
+    @EnvironmentObject var taskManager: TaskManager
     
     @State private var messageText = ""
     @State private var messages: [ChatMessage] = []
@@ -13,6 +14,8 @@ struct ChatView: View {
     @State private var errorMessage = ""
     @State private var hasAPIKey = false
     @FocusState private var isTextFieldFocused: Bool
+    @State private var processingStatus = "Ready"
+    @State private var currentTokenUsage: TokenUsage?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -25,17 +28,7 @@ struct ChatView: View {
                                 .id(message.id)
                         }
                         
-                        if isLoading {
-                            HStack {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                                Text("Claude is thinking...")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                        }
+                        // Remove inline loading indicator as we'll show it in the status bar
                     }
                     .padding(.vertical, 12)
                 }
@@ -111,6 +104,13 @@ struct ChatView: View {
             }
             .padding(.vertical, 8)
             .background(Color(.systemBackground))
+            
+            // Processing status bar
+            ProcessingStatusView(
+                isProcessing: isLoading,
+                statusMessage: processingStatus,
+                tokenUsage: currentTokenUsage
+            )
         }
         .navigationTitle("claude-code@terminal")
         .navigationBarTitleDisplayMode(.inline)
@@ -145,6 +145,8 @@ struct ChatView: View {
         
         isLoading = true
         streamingResponse = ""
+        processingStatus = "Initializing Claude..."
+        currentTokenUsage = nil
         
         // Add placeholder message for streaming response
         let streamingMessage = ChatMessage(content: "", type: .assistant)
@@ -173,11 +175,24 @@ struct ChatView: View {
                                 type: .assistant
                             )
                         }
+                        // Update status and token usage from service
+                        processingStatus = claudeService.processingStatus
+                        currentTokenUsage = claudeService.currentTokenUsage
                     }
                 }
                 
                 await MainActor.run {
                     isLoading = false
+                    processingStatus = claudeService.processingStatus
+                    currentTokenUsage = claudeService.currentTokenUsage
+                    
+                    // Extract tasks from the completed response
+                    if !streamingResponse.isEmpty {
+                        let extractedTasks = taskManager.extractTasksFromMessage(streamingResponse, messageId: messages.last?.id)
+                        if !extractedTasks.isEmpty {
+                            taskManager.addTasks(extractedTasks)
+                        }
+                    }
                 }
                 
             } catch {
@@ -287,6 +302,7 @@ struct ChatMessage: Identifiable, Equatable {
 }
 
 struct ChatMessageView: View {
+    @EnvironmentObject var taskManager: TaskManager
     let message: ChatMessage
     
     var body: some View {
@@ -330,10 +346,28 @@ struct ChatMessageView: View {
                 }
             }
             
-            // Terminal cursor for assistant messages
+            // Task indicator and terminal cursor for assistant messages
             if message.type == .assistant && !message.content.isEmpty {
                 HStack {
+                    // Show task indicator if this message has extracted tasks
+                    let messageTasks = taskManager.getTasksForMessage(message.id)
+                    if !messageTasks.isEmpty {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.blue)
+                                .font(.caption)
+                            Text("\(messageTasks.count) task\(messageTasks.count == 1 ? "" : "s") extracted")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    
                     Spacer()
+                    
                     Rectangle()
                         .fill(Color.green)
                         .frame(width: 8, height: 16)

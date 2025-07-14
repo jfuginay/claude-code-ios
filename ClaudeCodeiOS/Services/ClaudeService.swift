@@ -7,6 +7,8 @@ class ClaudeService: ObservableObject {
     @Published var currentContext: ProjectContext?
     @Published var error: ClaudeError?
     @Published var conversationHistory: [ClaudeMessage] = []
+    @Published var processingStatus = "Ready"
+    @Published var currentTokenUsage: TokenUsage?
     
     private let apiKey: String?
     private let baseURL = "https://api.anthropic.com/v1"
@@ -111,11 +113,20 @@ class ClaudeService: ObservableObject {
         return AsyncStream<String> { continuation in
             Task {
                 do {
+                    await MainActor.run {
+                        self.processingStatus = "Building context..."
+                        self.currentTokenUsage = nil
+                    }
+                    
                     let context = repository != nil ? await buildContext(
                         for: repository!,
                         activeFiles: activeFiles,
                         query: message
                     ) : nil
+                    
+                    await MainActor.run {
+                        self.processingStatus = "Connecting to Claude..."
+                    }
                     
                     let stream = try await streamClaudeAPI(
                         message: message,
@@ -123,13 +134,24 @@ class ClaudeService: ObservableObject {
                         conversationHistory: Array(conversationHistory.suffix(10))
                     )
                     
+                    await MainActor.run {
+                        self.processingStatus = "Processing response..."
+                    }
+                    
                     for await chunk in stream {
                         continuation.yield(chunk)
                     }
                     
+                    await MainActor.run {
+                        self.processingStatus = "Ready"
+                    }
+                    
                     continuation.finish()
                 } catch {
-                    self.error = .apiError(error.localizedDescription)
+                    await MainActor.run {
+                        self.error = .apiError(error.localizedDescription)
+                        self.processingStatus = "Error: \(error.localizedDescription)"
+                    }
                     continuation.finish()
                 }
             }
@@ -395,21 +417,48 @@ class ClaudeService: ObservableObject {
                         return
                     }
                     
-                    // Parse streaming response
-                    let responseString = String(data: data, encoding: .utf8) ?? ""
-                    let lines = responseString.components(separatedBy: "\n")
+                    // Create URLSession for streaming
+                    let session = URLSession(configuration: .default)
+                    let (stream, _) = try await session.bytes(for: request)
                     
-                    for line in lines {
-                        if line.hasPrefix("data: ") {
-                            let jsonString = String(line.dropFirst(6))
-                            if jsonString == "[DONE]" {
-                                break
-                            }
+                    var inputTokens = 0
+                    var outputTokens = 0
+                    var buffer = ""
+                    
+                    for try await byte in stream {
+                        buffer.append(Character(UnicodeScalar(byte)))
+                        
+                        // Process complete lines
+                        if let newlineIndex = buffer.firstIndex(of: "\n") {
+                            let line = String(buffer[..<newlineIndex])
+                            buffer.removeSubrange(...newlineIndex)
                             
-                            if let jsonData = jsonString.data(using: .utf8),
-                               let streamResponse = try? JSONDecoder().decode(ClaudeStreamResponse.self, from: jsonData),
-                               let content = streamResponse.delta?.text {
-                                continuation.yield(content)
+                            if line.hasPrefix("data: ") {
+                                let jsonString = String(line.dropFirst(6))
+                                
+                                if jsonString == "[DONE]" {
+                                    break
+                                }
+                                
+                                if let jsonData = jsonString.data(using: .utf8),
+                                   let streamResponse = try? JSONDecoder().decode(ClaudeStreamResponse.self, from: jsonData) {
+                                    
+                                    if let content = streamResponse.delta?.text {
+                                        continuation.yield(content)
+                                    }
+                                    
+                                    if let usage = streamResponse.usage {
+                                        inputTokens = usage.input_tokens
+                                        outputTokens = usage.output_tokens
+                                        
+                                        await MainActor.run {
+                                            self.currentTokenUsage = TokenUsage(
+                                                inputTokens: inputTokens,
+                                                outputTokens: outputTokens
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -652,6 +701,7 @@ private struct APIMessage: Codable {
 
 private struct ClaudeAPIResponse: Codable {
     let content: [ContentBlock]
+    let usage: Usage?
 }
 
 private struct ContentBlock: Codable {
@@ -669,11 +719,17 @@ private struct ClaudeStreamingRequest: Codable {
 private struct ClaudeStreamResponse: Codable {
     let type: String
     let delta: StreamDelta?
+    let usage: Usage?
 }
 
 private struct StreamDelta: Codable {
     let type: String?
     let text: String?
+}
+
+private struct Usage: Codable {
+    let input_tokens: Int
+    let output_tokens: Int
 }
 
 // MARK: - Error Types

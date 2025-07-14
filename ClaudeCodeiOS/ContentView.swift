@@ -10,6 +10,7 @@ struct ContentView: View {
     @StateObject private var fileSystemManager = FileSystemManager()
     @StateObject private var tokenizationEngine: TokenizationEngine
     @StateObject private var claudeService: ClaudeService
+    @StateObject private var taskManager = TaskManager()
     
     init() {
         let cacheManager = CacheManager()
@@ -35,6 +36,7 @@ struct ContentView: View {
             // Home Tab
             HomeView(selectedTab: $selectedTab, showingAPISetup: $showingAPISetup)
                 .environmentObject(claudeService)
+                .environmentObject(taskManager)
                 .tabItem {
                     Image(systemName: "house")
                     Text("Home")
@@ -57,11 +59,21 @@ struct ContentView: View {
                 .environmentObject(claudeService)
                 .environmentObject(gitManager)
                 .environmentObject(fileSystemManager)
+                .environmentObject(taskManager)
                 .tabItem {
                     Image(systemName: "bubble.left.and.text.bubble.right")
                     Text("Chat")
                 }
                 .tag(2)
+            
+            // Tasks Tab
+            TaskManagementView()
+                .environmentObject(taskManager)
+                .tabItem {
+                    Image(systemName: "checklist")
+                    Text("Tasks")
+                }
+                .tag(3)
             
             // Settings Tab
             SettingsTabView(showingAPISetup: $showingAPISetup)
@@ -70,7 +82,7 @@ struct ContentView: View {
                     Image(systemName: "gear")
                     Text("Settings")
                 }
-                .tag(3)
+                .tag(4)
         }
         .accentColor(.blue)
         .sheet(isPresented: $showingAPISetup) {
@@ -84,6 +96,7 @@ struct HomeView: View {
     @Binding var selectedTab: Int
     @Binding var showingAPISetup: Bool
     @EnvironmentObject var claudeService: ClaudeService
+    @EnvironmentObject var taskManager: TaskManager
     @State private var isConfigured = false
     
     var body: some View {
@@ -163,11 +176,21 @@ struct HomeView: View {
                         }
                         
                         QuickStartButton(
-                            icon: "doc.text.magnifyingglass",
-                            title: "Analyze Code",
-                            description: "Get insights about your codebase"
+                            icon: "checklist",
+                            title: "View Tasks",
+                            description: "Manage your project tasks"
                         ) {
-                            // Open code analysis
+                            selectedTab = 3
+                        }
+                        
+                        if let nextTask = taskManager.getNextTask() {
+                            QuickTaskButton(
+                                task: nextTask,
+                                onStart: {
+                                    taskManager.setCurrentTask(nextTask)
+                                    selectedTab = 3
+                                }
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -327,6 +350,55 @@ struct SettingsTabView: View {
             isConfigured = !apiKey.isEmpty
         } else {
             isConfigured = false
+        }
+    }
+}
+
+struct QuickTaskButton: View {
+    let task: Task
+    let onStart: () -> Void
+    
+    var body: some View {
+        Button(action: onStart) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Next Task")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                    
+                    Spacer()
+                    
+                    Image(systemName: task.priority.icon)
+                        .foregroundColor(task.priority.color)
+                        .font(.caption)
+                }
+                
+                Text(task.title)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                
+                HStack {
+                    HStack(spacing: 4) {
+                        Image(systemName: task.category.icon)
+                        Text(task.category.rawValue.capitalized)
+                    }
+                    .font(.caption)
+                    .foregroundColor(task.category.color)
+                    
+                    Spacer()
+                    
+                    Text("Start Task")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
         }
     }
 }
