@@ -10,7 +10,7 @@ struct ContentView: View {
     @StateObject private var fileSystemManager = FileSystemManager()
     @StateObject private var tokenizationEngine: TokenizationEngine
     @StateObject private var claudeService: ClaudeService
-    @StateObject private var taskManager = TaskManager()
+    // @StateObject private var taskManager = TaskManager() // TODO: Add after adding TaskManager to Xcode project
     
     init() {
         let cacheManager = CacheManager()
@@ -36,7 +36,7 @@ struct ContentView: View {
             // Home Tab
             HomeView(selectedTab: $selectedTab, showingAPISetup: $showingAPISetup)
                 .environmentObject(claudeService)
-                .environmentObject(taskManager)
+                // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
                     Image(systemName: "house")
                     Text("Home")
@@ -59,14 +59,15 @@ struct ContentView: View {
                 .environmentObject(claudeService)
                 .environmentObject(gitManager)
                 .environmentObject(fileSystemManager)
-                .environmentObject(taskManager)
+                // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
                     Image(systemName: "bubble.left.and.text.bubble.right")
                     Text("Chat")
                 }
                 .tag(2)
             
-            // Tasks Tab
+            // TODO: Tasks Tab - Add after adding TaskManager to Xcode project
+            /*
             TaskManagementView()
                 .environmentObject(taskManager)
                 .tabItem {
@@ -74,6 +75,7 @@ struct ContentView: View {
                     Text("Tasks")
                 }
                 .tag(3)
+            */
             
             // Settings Tab
             SettingsTabView(showingAPISetup: $showingAPISetup)
@@ -82,7 +84,7 @@ struct ContentView: View {
                     Image(systemName: "gear")
                     Text("Settings")
                 }
-                .tag(4)
+                .tag(3)
         }
         .accentColor(.blue)
         .sheet(isPresented: $showingAPISetup) {
@@ -96,7 +98,7 @@ struct HomeView: View {
     @Binding var selectedTab: Int
     @Binding var showingAPISetup: Bool
     @EnvironmentObject var claudeService: ClaudeService
-    @EnvironmentObject var taskManager: TaskManager
+    // @EnvironmentObject var taskManager: TaskManager // TODO: Add after adding TaskManager to Xcode project
     @State private var isConfigured = false
     
     var body: some View {
@@ -176,6 +178,16 @@ struct HomeView: View {
                         }
                         
                         QuickStartButton(
+                            icon: "doc.text.magnifyingglass",
+                            title: "Analyze Code",
+                            description: "Get insights about your codebase"
+                        ) {
+                            // Open code analysis
+                        }
+                        
+                        // TODO: Task management quick actions - Add after adding TaskManager to Xcode project
+                        /*
+                        QuickStartButton(
                             icon: "checklist",
                             title: "View Tasks",
                             description: "Manage your project tasks"
@@ -192,6 +204,7 @@ struct HomeView: View {
                                 }
                             )
                         }
+                        */
                     }
                     .padding(.horizontal)
                 }
@@ -354,6 +367,8 @@ struct SettingsTabView: View {
     }
 }
 
+// TODO: QuickTaskButton - Add after adding TaskManager to Xcode project
+/*
 struct QuickTaskButton: View {
     let task: Task
     let onStart: () -> Void
@@ -402,6 +417,7 @@ struct QuickTaskButton: View {
         }
     }
 }
+*/
 
 struct SettingsRow: View {
     let icon: String

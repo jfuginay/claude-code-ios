@@ -4,7 +4,7 @@ struct ChatView: View {
     @EnvironmentObject var claudeService: ClaudeService
     @EnvironmentObject var gitManager: GitManager
     @EnvironmentObject var fileSystemManager: FileSystemManager
-    @EnvironmentObject var taskManager: TaskManager
+    // @EnvironmentObject var taskManager: TaskManager // TODO: Add after adding TaskManager to Xcode project
     
     @State private var messageText = ""
     @State private var messages: [ChatMessage] = []
@@ -186,13 +186,15 @@ struct ChatView: View {
                     processingStatus = claudeService.processingStatus
                     currentTokenUsage = claudeService.currentTokenUsage
                     
-                    // Extract tasks from the completed response
+                    // TODO: Extract tasks from the completed response - Add after adding TaskManager to Xcode project
+                    /*
                     if !streamingResponse.isEmpty {
                         let extractedTasks = taskManager.extractTasksFromMessage(streamingResponse, messageId: messages.last?.id)
                         if !extractedTasks.isEmpty {
                             taskManager.addTasks(extractedTasks)
                         }
                     }
+                    */
                 }
                 
             } catch {
@@ -302,7 +304,7 @@ struct ChatMessage: Identifiable, Equatable {
 }
 
 struct ChatMessageView: View {
-    @EnvironmentObject var taskManager: TaskManager
+    // @EnvironmentObject var taskManager: TaskManager // TODO: Add after adding TaskManager to Xcode project
     let message: ChatMessage
     
     var body: some View {
@@ -346,10 +348,11 @@ struct ChatMessageView: View {
                 }
             }
             
-            // Task indicator and terminal cursor for assistant messages
+            // Terminal cursor for assistant messages
             if message.type == .assistant && !message.content.isEmpty {
                 HStack {
-                    // Show task indicator if this message has extracted tasks
+                    // TODO: Show task indicator if this message has extracted tasks - Add after adding TaskManager to Xcode project
+                    /*
                     let messageTasks = taskManager.getTasksForMessage(message.id)
                     if !messageTasks.isEmpty {
                         HStack(spacing: 4) {
@@ -365,6 +368,7 @@ struct ChatMessageView: View {
                         .background(Color.blue.opacity(0.1))
                         .cornerRadius(8)
                     }
+                    */
                     
                     Spacer()
                     
