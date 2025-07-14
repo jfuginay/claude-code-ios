@@ -14,8 +14,9 @@ struct ChatView: View {
     @State private var errorMessage = ""
     @State private var hasAPIKey = false
     @FocusState private var isTextFieldFocused: Bool
-    @State private var processingStatus = "Ready"
-    @State private var currentTokenUsage: TokenUsage?
+    // TODO: Processing status tracking - Add after adding TokenUsage to Xcode project
+    // @State private var processingStatus = "Ready"
+    // @State private var currentTokenUsage: TokenUsage?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -105,12 +106,14 @@ struct ChatView: View {
             .padding(.vertical, 8)
             .background(Color(.systemBackground))
             
-            // Processing status bar
+            // TODO: Processing status bar - Add after adding ProcessingStatusView to Xcode project
+            /*
             ProcessingStatusView(
                 isProcessing: isLoading,
                 statusMessage: processingStatus,
                 tokenUsage: currentTokenUsage
             )
+            */
         }
         .navigationTitle("claude-code@terminal")
         .navigationBarTitleDisplayMode(.inline)
@@ -145,8 +148,9 @@ struct ChatView: View {
         
         isLoading = true
         streamingResponse = ""
-        processingStatus = "Initializing Claude..."
-        currentTokenUsage = nil
+        // TODO: Processing status tracking - Add after adding TokenUsage to Xcode project
+        // processingStatus = "Initializing Claude..."
+        // currentTokenUsage = nil
         
         // Add placeholder message for streaming response
         let streamingMessage = ChatMessage(content: "", type: .assistant)
@@ -175,16 +179,17 @@ struct ChatView: View {
                                 type: .assistant
                             )
                         }
-                        // Update status and token usage from service
-                        processingStatus = claudeService.processingStatus
-                        currentTokenUsage = claudeService.currentTokenUsage
+                        // TODO: Update status and token usage from service - Add after adding TokenUsage to Xcode project
+                        // processingStatus = claudeService.processingStatus
+                        // currentTokenUsage = claudeService.currentTokenUsage
                     }
                 }
                 
                 await MainActor.run {
                     isLoading = false
-                    processingStatus = claudeService.processingStatus
-                    currentTokenUsage = claudeService.currentTokenUsage
+                    // TODO: Processing status tracking - Add after adding TokenUsage to Xcode project
+                    // processingStatus = claudeService.processingStatus
+                    // currentTokenUsage = claudeService.currentTokenUsage
                     
                     // TODO: Extract tasks from the completed response - Add after adding TaskManager to Xcode project
                     /*
