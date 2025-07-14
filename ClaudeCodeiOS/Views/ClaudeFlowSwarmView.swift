@@ -7,6 +7,8 @@ struct ClaudeFlowSwarmView: View {
     @State private var showingFlowCreation = false
     @State private var isCreatingFlow = false
     @State private var selectedFlow: Flow?
+    @State private var showingEnhancedOptions = false
+    @State private var enhancedModeEnabled = false
     @FocusState private var isInputFocused: Bool
     
     init(claudeService: ClaudeService) {
@@ -19,7 +21,8 @@ struct ClaudeFlowSwarmView: View {
                 // Header with flow status
                 FlowStatusHeader(
                     status: flowEngine.flowStatus,
-                    macroGoal: flowEngine.currentMacroGoal
+                    macroGoal: flowEngine.currentMacroGoal,
+                    enhancedMode: enhancedModeEnabled
                 )
                 
                 if flowEngine.activeFlows.isEmpty {
@@ -60,10 +63,24 @@ struct ClaudeFlowSwarmView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("New Flow") {
-                        showingFlowCreation = true
+                    Menu {
+                        Button(action: { showingFlowCreation = true }) {
+                            Label("New Flow", systemImage: "plus.circle")
+                        }
+                        .disabled(isCreatingFlow)
+                        
+                        Divider()
+                        
+                        Toggle(isOn: $enhancedModeEnabled) {
+                            Label("Enhanced Mode", systemImage: "bolt.fill")
+                        }
+                        
+                        Button(action: { showingEnhancedOptions = true }) {
+                            Label("Swarm Settings", systemImage: "gearshape")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
                     }
-                    .disabled(isCreatingFlow)
                 }
             }
         }
@@ -84,6 +101,9 @@ struct ClaudeFlowSwarmView: View {
         
         isCreatingFlow = true
         let originalTask = macroTaskInput
+        
+        // Set enhanced mode on flow engine
+        flowEngine.useEnhancedMode = enhancedModeEnabled
         
         Task {
             do {
@@ -133,9 +153,15 @@ struct ClaudeFlowSwarmView: View {
     private func executeFlow(_ flow: Flow) {
         Task {
             do {
-                try await flowEngine.executeFlow(flow)
+                if enhancedModeEnabled {
+                    // Use parallel agent execution for enhanced mode
+                    try await flowEngine.executeWithParallelAgents(flow)
+                } else {
+                    try await flowEngine.executeFlow(flow)
+                }
             } catch {
                 // TODO: Handle execution error
+                print("Flow execution error: \(error)")
             }
         }
     }
@@ -146,6 +172,7 @@ struct ClaudeFlowSwarmView: View {
 struct FlowStatusHeader: View {
     let status: FlowStatus
     let macroGoal: String?
+    let enhancedMode: Bool
     
     var body: some View {
         VStack(spacing: 8) {
@@ -153,9 +180,21 @@ struct FlowStatusHeader: View {
                 StatusIndicator(status: status)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(statusText)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                    HStack {
+                        Text(statusText)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        if enhancedMode {
+                            Label("Enhanced", systemImage: "bolt.fill")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 2)
+                                .background(Color.orange.opacity(0.2))
+                                .cornerRadius(4)
+                        }
+                    }
                     
                     if let goal = macroGoal {
                         Text(goal)

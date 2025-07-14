@@ -9,10 +9,13 @@ class ClaudeFlowEngine: ObservableObject {
     @Published var activeFlows: [Flow] = []
     @Published var flowStatus: FlowStatus = .idle
     @Published var currentMacroGoal: String?
+    @Published var useEnhancedMode: Bool = false
+    @Published var activeSwarmClusters: [SwarmCluster] = []
     
     private let swarmOrchestrator: ClaudeSwarmOrchestrator
     private let contextDB: SharedContextDatabase
     private let claudeService: ClaudeService
+    private let enhancedEngine: EnhancedClaudeFlowEngine?
     
     init(claudeService: ClaudeService) {
         self.claudeService = claudeService
@@ -21,6 +24,8 @@ class ClaudeFlowEngine: ObservableObject {
             contextDB: contextDB,
             claudeService: claudeService
         )
+        // Initialize enhanced engine for complex tasks
+        self.enhancedEngine = EnhancedClaudeFlowEngine(claudeService: claudeService)
     }
     
     // MARK: - Flow Decomposition
@@ -28,6 +33,12 @@ class ClaudeFlowEngine: ObservableObject {
     func decomposeTask(_ macroTask: String) async throws -> Flow {
         flowStatus = .analyzing
         currentMacroGoal = macroTask
+        
+        // Check if task complexity warrants enhanced mode
+        if shouldUseEnhancedMode(for: macroTask) && enhancedEngine != nil {
+            useEnhancedMode = true
+            return try await decomposeWithEnhancedEngine(macroTask)
+        }
         
         // Use Claude's intelligence to break down the macro task
         let decompositionPrompt = """
@@ -178,6 +189,63 @@ class ClaudeFlowEngine: ObservableObject {
         }
     }
     
+    // MARK: - Enhanced Mode Methods
+    
+    private func shouldUseEnhancedMode(for task: String) -> Bool {
+        // Use enhanced mode for complex multi-phase tasks
+        let complexityIndicators = [
+            "build a complete",
+            "create an entire",
+            "implement full",
+            "develop comprehensive",
+            "multiple features",
+            "end-to-end",
+            "production-ready",
+            "enterprise",
+            "scalable system"
+        ]
+        
+        let lowercasedTask = task.lowercased()
+        return complexityIndicators.contains { lowercasedTask.contains($0) }
+    }
+    
+    private func decomposeWithEnhancedEngine(_ macroTask: String) async throws -> Flow {
+        guard let engine = enhancedEngine else {
+            throw FlowError.enhancedModeUnavailable
+        }
+        
+        // Use enhanced engine for complex orchestration
+        let result = try await engine.orchestrateComplexTask(macroTask)
+        
+        // Convert to standard Flow format
+        let flow = Flow(
+            id: result.swarmClusterId,
+            macroGoal: result.originalTask,
+            microTasks: [], // Enhanced engine manages tasks internally
+            executionStrategy: .hybrid,
+            totalEstimatedTime: formatDuration(result.executionTime)
+        )
+        
+        activeFlows.append(flow)
+        return flow
+    }
+    
+    func executeWithParallelAgents(_ flow: Flow) async throws {
+        guard let engine = enhancedEngine else {
+            // Fallback to standard execution
+            try await executeFlow(flow)
+            return
+        }
+        
+        flowStatus = .executing
+        
+        // Spin up multiple Claude instances for parallel execution
+        let result = try await engine.orchestrateComplexTask(flow.macroGoal)
+        
+        // Update flow status based on result
+        flowStatus = result.tasksCompleted == result.agentsUsed ? .completed : .failed
+    }
+    
     // MARK: - Flow Monitoring
     
     func getFlowProgress(_ flowId: String) async -> FlowProgress {
@@ -190,6 +258,10 @@ class ClaudeFlowEngine: ObservableObject {
     
     func getSwarmIntelligence(for flowId: String) async -> SwarmIntelligence {
         return await swarmOrchestrator.getSwarmIntelligence(for: flowId)
+    }
+    
+    func getActiveSwarmClusters() -> [SwarmCluster] {
+        return enhancedEngine?.activeSwarms ?? []
     }
     
     // MARK: - Private Helpers
@@ -225,6 +297,17 @@ class ClaudeFlowEngine: ObservableObject {
         }
         
         return jsonLines.isEmpty ? nil : jsonLines.joined(separator: "\n")
+    }
+    
+    private func formatDuration(_ interval: TimeInterval) -> String {
+        let hours = Int(interval) / 3600
+        let minutes = (Int(interval) % 3600) / 60
+        
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
+        }
     }
 }
 
@@ -263,6 +346,7 @@ struct MicroTask: Codable, Identifiable {
     var result: String?
     var startedAt: Date?
     var completedAt: Date?
+    var requiredOperation: Operation = .analyze
     
     enum TaskType: String, Codable, CaseIterable {
         case code = "code"
@@ -272,6 +356,12 @@ struct MicroTask: Codable, Identifiable {
         case deploy = "deploy"
         case documentation = "documentation"
         case review = "review"
+        case architect = "architect"
+        case security = "security"
+        case devops = "devops"
+        case analyst = "analyst"
+        case coder = "coder"
+        case tester = "tester"
     }
     
     enum TaskStatus: String, Codable {
@@ -319,6 +409,7 @@ enum FlowError: LocalizedError {
     case taskExecutionFailed(String)
     case agentSpawnFailed
     case databaseError
+    case enhancedModeUnavailable
     
     var errorDescription: String? {
         switch self {
@@ -332,6 +423,8 @@ enum FlowError: LocalizedError {
             return "Failed to spawn swarm agent"
         case .databaseError:
             return "Database operation failed"
+        case .enhancedModeUnavailable:
+            return "Enhanced execution mode is not available"
         }
     }
 }
