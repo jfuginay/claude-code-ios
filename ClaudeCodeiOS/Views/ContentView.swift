@@ -71,15 +71,6 @@ struct ContentView: View {
             }
             .tag(2)
             
-            // Claude Flow & Swarm - Multi-agent task orchestration
-            ClaudeFlowSwarmView(claudeService: claudeService)
-                .environmentObject(claudeService)
-                .tabItem {
-                    Image(systemName: "brain.head.profile")
-                    Text("flow")
-                }
-                .tag(3)
-            
             // TaskMaster Tab (temporarily disabled - need to add to Xcode project)
             TaskMasterView()
                 .environmentObject(claudeService)
@@ -87,8 +78,7 @@ struct ContentView: View {
                     Image(systemName: "checklist")
                     Text("tasks")
                 }
-                .tag(4)
-            
+                .tag(3)
             
             // Settings Tab
             SettingsTabView(showingAPISetup: $showingAPISetup)
@@ -97,7 +87,7 @@ struct ContentView: View {
                     Image(systemName: "gearshape")
                     Text("config")
                 }
-                .tag(5)
+                .tag(4)
         }
         .accentColor(.blue)
         .sheet(isPresented: $showingAPISetup) {
