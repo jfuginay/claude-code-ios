@@ -11,7 +11,7 @@ struct ContentView: View {
     @StateObject private var tokenizationEngine: TokenizationEngine
     @StateObject private var claudeService: ClaudeService
     // @StateObject private var taskManager = TaskManager() // TODO: Add after adding TaskManager to Xcode project
-    @StateObject private var gitHubService = GitHubService()
+    // @StateObject private var gitHubService = GitHubService() // TODO: Add after adding GitHubService to Xcode project
     
     init() {
         let cacheManager = CacheManager()
@@ -35,7 +35,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
-            MinimalistHomeView(selectedTab: $selectedTab)
+            HomeView(selectedTab: $selectedTab, showingAPISetup: $showingAPISetup)
                 .environmentObject(claudeService)
                 // .environmentObject(taskManager) // TODO: Add after adding TaskManager to Xcode project
                 .tabItem {
@@ -44,10 +44,10 @@ struct ContentView: View {
                 }
                 .tag(0)
             
-            // Repositories Tab
-            GitHubRepositoryView()
-                .environmentObject(gitHubService)
+            // Projects Tab  
+            ProjectsView()
                 .environmentObject(gitManager)
+                .environmentObject(fileSystemManager)
                 .environmentObject(claudeService)
                 .tabItem {
                     Image(systemName: "folder.badge.gearshape")
@@ -56,7 +56,7 @@ struct ContentView: View {
                 .tag(1)
             
             // Chat Tab
-            CLIChatView()
+            ChatView()
                 .environmentObject(claudeService)
                 .environmentObject(gitManager)
                 .environmentObject(fileSystemManager)
@@ -79,7 +79,7 @@ struct ContentView: View {
             */
             
             // Settings Tab
-            CLISettingsView()
+            SettingsTabView(showingAPISetup: $showingAPISetup)
                 .environmentObject(claudeService)
                 .tabItem {
                     Image(systemName: "gearshape")

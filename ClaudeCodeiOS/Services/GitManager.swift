@@ -69,7 +69,7 @@ class GitManager: ObservableObject {
         try fileManager.createDirectory(at: localPath, withIntermediateDirectories: true)
         
         // Clone the repository
-        try await executeGitCommand(["clone", url, localPath.path])
+        try await executeGitCommand(["clone", url, "."], in: localPath.deletingLastPathComponent())
         
         // Create repository object and add to list
         let repository = Repository(
@@ -97,7 +97,11 @@ class GitManager: ObservableObject {
             throw GitError.repositoryAlreadyExists
         }
         
-        try await executeGitCommand(["clone", url, localPath.path])
+        // Create parent directory
+        let parentDir = localPath.deletingLastPathComponent()
+        try fileManager.createDirectory(at: parentDir, withIntermediateDirectories: true)
+        
+        try await executeGitCommand(["clone", url, localPath.lastPathComponent], in: parentDir)
         
         let repository = Repository(
             name: repoName,
